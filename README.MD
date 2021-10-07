@@ -4,6 +4,7 @@
 ------
 - [Introduction](#toc-introduction)
 - [Plan](#toc-plan)
+- [Environment and files](#toc-environment)
 - [Execution (What Happened)](#toc-execution)
 - [Questions and Answers](#toc-questions)
 - [Testing](#toc-testing)
@@ -11,6 +12,10 @@
 
 
 ## <a id="toc-introduction"></a>Introduction: 
+
+This document serves to catalog my process, results, and all other discussion surrounding the weedmaps code test questions run against the lab data found on 2019-03-26T22:49:29-file.txt.gz 
+
+Problem description/direction was as follows:
 
  1. Using the tool of your choice, acquire and stage the file for analysis.
  2. Derive the correct schema for the file.
@@ -20,13 +25,38 @@
 
 ## <a id="toc-plan"></a>Plan: 
 
-Initial Plan
+After viewing the problem statement and pulling down the file the basic plan became immediatley clear.
+
+1. Get data file into s3
+2. View basic structure of json objects so I can define basic athena table schema, identify potential partitions
+3. Get data into partitioned table in Athena in a proper columnar data format (I typically choose parquet) so that queries on the entire data set are viable and quick
+4. Explore data and identify cleanliness issues
+5. Create cleansed, partitioned, table with quick query response times for answering questions
+6. Re-Test assumptions that final table dataset is good, and that answers to questsions make sense based on any data caveats
+7. Document
+
+
+
+[^back](#toc-table-of-contents)
+
+## <a id="toc-environment"></a>Environment and files: 
+
+The basic tooling I used for this was simply:
+
+AWS S3
+AWS Athena
+Bash Shell
+Jetbrains DataGrip
 
 [^back](#toc-table-of-contents)
 
 ## <a id="toc-execution"></a>Plan Execution (What Happened): 
 
-Executing the Plan and how it played out.
+I decided right away that this coud be done on the cheap without any sort of EMR cluster running spark python jobs, and so instead of spinning up any sort of EC2 instance as a middle man for the data I used the aws cli to pull down the file locally. At this point, I just needed a basic view of the file so I could define an initial schema for an Athena table I could optimized after the fact for query speed. I simply ran zmore to get this information: 
+
+[!zmore](./zmore.svg)
+
+
 
 [^back](#toc-table-of-contents)
 

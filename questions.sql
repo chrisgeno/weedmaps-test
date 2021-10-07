@@ -9,9 +9,6 @@
  */
 
 -- 1. Which 5 vendors have the most products?
-select distinct product_id
-from dev_geno.lab_data_partitioned_normalized;
-
 with vendor_product_counts as (
     select vendor_id,
            count(distinct product_id) as product_count,
@@ -52,9 +49,17 @@ select product_id,
        min(tested_at),
        max(tested_at),
        min(expires_at),
-       max(expires_at)
+       max(expires_at),
+       min(thc),
+       max(thc),
+       min(thca),
+       max(thca),
+       min(cbd),
+       max(cbd),
+       min(cbda),
+       max(cbda)
 from dev_geno.lab_data_partitioned_normalized
-group by 1 order by 2 desc;
+group by 1 order by 7 asc;
 
 select product_id, tested_at, expires_at
 from dev_geno.lab_data_partitioned_normalized
@@ -118,6 +123,9 @@ order by 3 desc;
 
 
 -- 5. Which 5 labs have the highest accuracy?
+--bad data, nulls for a lab, impossible values for thc, thca, cbd, cbda (negatives, outside 3 standard deviations?
+
+
 -- 6. Which 5 labs have the lowest accuracy?
 
 
