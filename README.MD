@@ -54,7 +54,7 @@ Jetbrains DataGrip
 
 I decided right away that this coud be done on the cheap without any sort of EMR cluster running spark python jobs, and so instead of spinning up any sort of EC2 instance as a middle man for the data I used the aws cli to pull down the file locally. At this point, I just needed a basic view of the file so I could define an initial schema for an Athena table I could optimized after the fact for query speed. I simply ran zmore to get this information: 
 
-[!zmore](./zmore.svg)
+![image](https://user-images.githubusercontent.com/22456230/136464814-765daf23-f276-4559-a6db-99eae94c0573.png)
 
 
 
