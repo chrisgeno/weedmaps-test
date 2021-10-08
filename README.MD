@@ -217,6 +217,9 @@ Same assumptions as in 3, but with the desc changed to asc.
 
 
 ### 5. Which 5 labs have the highest accuracy?
+
+#### ITERATION 1:
+
 For this question I'm going to define accuracy as not only being a valid, useable data point for each column, but as also being the proper format for reporting. The rules I'll be using for valid vs accurate are as follows:
 
 1. batch_id, vendor_id, product_id, lab_id: are not null
@@ -224,12 +227,24 @@ For this question I'm going to define accuracy as not only being a valid, useabl
 3. thc, thca, cbd, cbda: are not null and have values >= 0. It is unclear what a negative value represents and so this is considered invalid data. *Note I had considered running statistics on these values to find extreme outliers as inaccurate readings, but as I have no reference for what is reality in this situation I opted against it for time.
 4. State is fully written out as the proper state name and not a code or abbreviation. IE California, and not CA or Calif.
 
+[Query Result](question_5_query_output.csv)
+
+#### ITERATION 2:
+
+Having done this calculation based on the above data and having explored the state identifiers over the years. It seemed like that assumption may have been bad as standards may have evolved and those labs may very well have been providing accurate state data at the time. I decided I should attempt a second iteration where, since all state data was actually a valid identifier except for where null, that should be left out of the accuracy calculation. Effectively only measuring inaccuracy as labs with negative values in their potency readings. That query is also in the [questions.sql](questions.sql) file and those results are here: [Query 5 and 6 Iteration 2 output](question_5_and_6_ITERATION2_query_output.csv)
 
 
 
 
 ### 6. Which 5 labs have the lowest accuracy?
 
+####ITERATION 1:
+
+For the initial set of assumptions used in 5 the query results for lowest accuracy are here: [Query Result](question_6_query_output.csv)
+
+#### ITERATION 2:
+
+[Query 5 and 6 Iteration 2 output](question_5_and_6_ITERATION2_query_output.csv)
 
 ### 7. Which 5 states have the most products and how many?
 [Query Result](question_7_and_8_query_output.csv)
