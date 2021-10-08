@@ -25,7 +25,7 @@ Problem description/direction was as follows:
  4. Using queries, answer the questions we have provided.
  5. Prepare a document containing your results and discussion of your methods. THIS DOCUMENT
 
- Note that throughout the various sql files, and code snippets, some comments have been left in, and in the [questions.sql](questions.sql) file some exploratry queries related to understanding the data used to answer the question have been left in. Normally I would clean this sort of thing up, but in this case I thought it useful as a way to give insight into my thought process and ongoing testing that I like to do to verify as I go.
+ Note that throughout the various sql files, and code snippets, some comments have been left in, and in the [questions.sql](questions.sql) file some exploratory queries related to understanding the data used to answer the question have been left in. Normally I would clean this sort of thing up, but in this case I thought it useful as a way to give insight into my thought process and ongoing testing that I like to do to verify as I go. I realize this may make it a little busy in that file, and would welcome the opportunity to walk anyone through it and discuss. 
 
 ## <a id="toc-plan"></a>Plan: 
 
@@ -37,7 +37,7 @@ After viewing the problem statement and pulling down the file the basic plan bec
 4. Get data into partitioned table in Athena in a proper columnar data format (I typically choose parquet) so that queries on the entire data set are viable and quick
 5. Explore data and identify cleanliness issues
 6. Create cleansed, partitioned, table with quick query response times for answering questions
-7. Re-Test assumptions that final table dataset is good, and that answers to questsions make sense based on any data caveats
+7. Re-Test assumptions that final table dataset is good, and that answers to questions make sense based on any data caveats
 8. Document
 
 
@@ -198,10 +198,10 @@ I was careful to exclude the data anomalies I'd found previously in the where cl
 
 There appeared to be many vendors with the same number of products, so I assumed a dense_rank of the vendors with the top 5 highest amounts of products was the proper way to answer this. This output has 1794 distinct vendors with the top 5 highest amounts of products. 
 
-This gave me pause at first and led to me checking for various data anomalies I may have missed....
+This gave me pause at first and led to me checking for various data anomalies I may have missed, but I didn't see an obvious solution at the moment.
 
 ### 2. Which 5 vendors have the fewest products?
-[Output here](questio_2_query_output.csv)
+[Output here](question_2_query_output.csv)
 
 Similar to 1, but I simply inverted the order by's in the query to asc sort rather than desc.
 
@@ -301,7 +301,7 @@ My testing process is usually continuous throughout with checks before and after
 - lab_data_partitioned rows: 233,225,647
 - lab_data_partitioned_normalized rows: 233,225,647
 
-This actualy saved me when created the partitioned_normalized table as I had initially used a join that used an array contains function, which caused some duplication, likely on nulls, which led me to explicitly state the state mappings for normalization.
+This saved me when creating the partitioned_normalized table as I had initially used a join that used an array contains function, which caused some duplication, likely on nulls, which led me to explicitly state the state mappings for normalization.
 
 Much of the in process testing can be seen in the questions.sql file as I went. 
 
