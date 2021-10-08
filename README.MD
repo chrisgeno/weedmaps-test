@@ -1,5 +1,7 @@
 # Weedmaps Interview Code Challenge
 
+This document and all supporting files are available at https://github.com/chrisgeno/weedmaps-test It may be easier to view the readme with it's markdown and links to files referenced within it from there rather than locally.
+
 ## <a id="toc-table-of-contents"></a> Table of Contents:
 ------
 - [Introduction](#toc-introduction)
