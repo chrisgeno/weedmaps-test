@@ -293,14 +293,22 @@ day_of_week,day_of_week_str,avg_batches_tested
 
 ## <a id="toc-testing"></a>Testing:
 
+My testing process is usually continuous throughout with checks before and after each stage of development, with testing and sanity checks at the end. For example, when creating each of my tables I would check basic things like row counts to make sure I hadn't caused inadvertent duplication. Normally I would maintain statistics on certain columns and their values, but I kept it very basic for this exercise due to time constraints. 
+
 - lab_data rows: 233,225,647
 - lab_data_partitioned rows: 233,225,647
 - lab_data_partitioned_normalized rows: 233,225,647
 
+This actualy saved me when created the partitioned_normalized table as I had initially used a join that used an array contains function, which caused some duplication, likely on nulls, which led me to explicitly state the state mappings for normalization.
+
+Much of the in process testing can be seen in the questions.sql file as I went. 
+
+I was particularly concerned about questions 1 and 2 where it seemed that many vendors had the same amount of products. I tested this against counting batches rather than products, and that yielded a better looking list but it still did not seem the correct way to me. Eventually I even ran the queries agains the slow lab_data table just to verify that those results matched, and they did.
+
 [^back](#toc-table-of-contents)
 
-## <a id="toc-notes"></a>Thoughts and Notes after the fact: 
+## <a id="toc-notes"></a>Final Thoughts and Notes after the fact: 
 
-After the fact thoughts and notes and things I would have done if time and budget weren't as constrained as they were.
+ The data seemed to have fairly common cleanliness issues, and I believe I found most if not all of them. However, I do feel like I handled them in a one off way consistent with this static data set. In production I would have likely handled this differently as the data streamed in, and set up some sort of heuristic for handling unknown variations in states, and id's. 
 
 [^back](#toc-table-of-contents)

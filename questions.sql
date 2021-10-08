@@ -329,7 +329,7 @@ order by 2 desc;
 
 select *
 from dev_geno.lab_data_partitioned_normalized
-where day_of_week(tested_at) is null;
+where day_of_week(tested_at) is null; --could a date not have been converted right?
 
 with batches_tested_per_day as (
     select tested_at,

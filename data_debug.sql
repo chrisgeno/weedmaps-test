@@ -74,3 +74,17 @@ select distinct cbda
 from dev_geno.lab_data_partitioned
 order by 1 asc nulls first;
 --all potency values have negatives, how to handle?
+
+--Make sure batches can only have one product_id
+select batch_id,
+       count(distinct product_id)
+from dev_geno.lab_data_partitioned_normalized
+group by 1
+order by 2 desc;
+
+--Validate that products always have multiple batches
+select product_id,
+       count(distinct batch_id)
+from dev_geno.lab_data_partitioned_normalized
+group by 1
+order by 2 desc;
