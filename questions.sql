@@ -8,7 +8,7 @@
 6. The output format is always json and each line is a complete entry
  */
 
--- 1. Which 5 vendors have the most products?
+-- 1. Which 5 vendors have the most products? (Run Time 8.58 seconds)
 with vendor_product_counts as (
     select vendor_id,
            count(distinct product_id) as product_count,
@@ -16,6 +16,7 @@ with vendor_product_counts as (
     from dev_geno.lab_data_partitioned_normalized
     where vendor_id is not null
       and product_id is not null
+      and thc >= 0 and thca >= 0 and cbd >= 0 and cbda >= 0
     group by 1
     order by 2 desc
 )
@@ -23,8 +24,9 @@ select *
 from vendor_product_counts
 where rank <= 5
 order by 2 desc
+;
 
--- 2. Which 5 vendors have the fewest products?
+-- 2. Which 5 vendors have the fewest products? (Run time 8.076 seconds)
 -- simply changing our rank function and order by to use asc instead
 with vendor_product_counts as (
     select vendor_id,
@@ -33,6 +35,7 @@ with vendor_product_counts as (
     from dev_geno.lab_data_partitioned_normalized
     where vendor_id is not null
       and product_id is not null
+    and thc >= 0 and thca >= 0 and cbd >= 0 and cbda >= 0
     group by 1
     order by 2 asc
 )
@@ -65,52 +68,74 @@ select product_id, tested_at, expires_at
 from dev_geno.lab_data_partitioned_normalized
 where tested_at > expires_at;
 
-with latest_product_test as (
+with latest_product_test as (  --runtime 12.982 seconds
     select product_id,
            max(tested_at) as latest_tested_at
     from dev_geno.lab_data_partitioned_normalized
     group by 1
+),
+potency as (
+    select ldpn.product_id,
+           thc + thca + cbd + cbda                                   as total_potency,
+           thc,
+           thca,
+           cbd,
+           cbda,
+           dense_rank() over (order by thc + thca + cbd + cbda desc) as rank
+    from dev_geno.lab_data_partitioned_normalized ldpn
+             inner join latest_product_test lpt on ldpn.product_id = lpt.product_id and
+                                                   ldpn.tested_at = lpt.latest_tested_at
+    where ldpn.product_id is not null
+      and thc >= 0
+      and thca >= 0
+      and cbd >= 0
+      and cbda >= 0
+    order by 2 desc
 )
-select ldpn.product_id,
-       thc + thca + cbd + cbda as total_potency,
-       thc,
-       thca,
-       cbd,
-       cbda,
-       dense_rank() over (order by thc + thca + cbd + cbda desc) as rank
-from dev_geno.lab_data_partitioned_normalized ldpn
-inner join latest_product_test lpt on ldpn.product_id = lpt.product_id and
-                                      ldpn.tested_at = lpt.latest_tested_at
-order by 2 desc
+select *
+from potency
+where rank <= 5
 ;
 
 
-select distinct product_id,
-       thc + thca + cbd + cbda as total_potency,
-                tested_at,
-                expires_at
+select *
 from dev_geno.lab_data_partitioned_normalized
-where product_id = 'bcddb81d-2500-4d6c-90cd-4c1da3c859c1'
-order by 3 desc;
+--where product_id = 'bcddb81d-2500-4d6c-90cd-4c1da3c859c1'
+-- where product_id = '7226a48c-01b4-43db-91dc-18350ce873ef'
+-- where product_id = '06f9f30d-815f-4b79-b200-5b1e676babf6'
+-- where product_id = '7491d0f4-951c-4b48-8578-430aeefe8bbe'
+where product_id = 'a8d3ead3-5571-4114-b9b2-0dc368576781'
+order by tested_at desc
+;
 
--- 4. Which 5 products have the lowest potency?
+-- 4. Which 5 products have the lowest potency? --runtime 12.757 seconds
 with latest_product_test as (
     select product_id,
            max(tested_at) as latest_tested_at
     from dev_geno.lab_data_partitioned_normalized
     group by 1
+),
+potency as (
+    select ldpn.product_id,
+           thc + thca + cbd + cbda                                   as total_potency,
+           thc,
+           thca,
+           cbd,
+           cbda,
+           dense_rank() over (order by thc + thca + cbd + cbda asc) as rank
+    from dev_geno.lab_data_partitioned_normalized ldpn
+             inner join latest_product_test lpt on ldpn.product_id = lpt.product_id and
+                                                   ldpn.tested_at = lpt.latest_tested_at
+    where ldpn.product_id is not null
+      and thc >= 0
+      and thca >= 0
+      and cbd >= 0
+      and cbda >= 0
+    order by 2 asc
 )
-select ldpn.product_id,
-       thc + thca + cbd + cbda as total_potency,
-       thc,
-       thca,
-       cbd,
-       cbda,
-       dense_rank() over (order by thc + thca + cbd + cbda asc) as rank
-from dev_geno.lab_data_partitioned_normalized ldpn
-inner join latest_product_test lpt on ldpn.product_id = lpt.product_id and
-                                      ldpn.tested_at = lpt.latest_tested_at
-order by 2 asc
+select *
+from potency
+where rank <= 5
 ;
 
 select distinct product_id,
