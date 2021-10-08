@@ -24,6 +24,24 @@ from dev_geno.lab_data_partitioned
 order by 1 asc nulls first;
 --mix of / formatted and - formatted dates with nulls
 
+--Verify different formats of date here. Check for US vs European (month first or second)
+select distinct substr(tested_at, 5, 1)
+from dev_geno.lab_data_partitioned
+;
+
+select distinct substr(tested_at, 1, 4)
+from dev_geno.lab_data_partitioned
+order by 1; -- this is year
+
+select distinct substr(tested_at, 6, 2)
+from dev_geno.lab_data_partitioned
+order by 1; -- this is month
+
+select distinct substr(tested_at, 9, 2)
+from dev_geno.lab_data_partitioned
+order by 1; --this appears to be day
+
+
 select *
 from dev_geno.lab_data_partitioned
 where tested_at is null;

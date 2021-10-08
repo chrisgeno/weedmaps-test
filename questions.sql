@@ -97,7 +97,7 @@ from potency
 where rank <= 5
 ;
 
-
+-- sanity check all data for top 5 product_id's
 select *
 from dev_geno.lab_data_partitioned_normalized
 --where product_id = 'bcddb81d-2500-4d6c-90cd-4c1da3c859c1'
@@ -148,37 +148,71 @@ order by 3 desc;
 
 
 -- 5. Which 5 labs have the highest accuracy?
---bad data, nulls for a lab, impossible values for thc, thca, cbd, cbda (negatives, outside 3 standard deviations?
+--inaccurate reading would be::: bad data, nulls for a lab, 
+--impossible values for thc, thca, cbd, cbda (negatives, ?? values outside 3 standard deviations??
+with vendor_accuracy as
+         (
+             select vendor_id,
+                    (thc >= 0 and thca >= 0 and cbd >= 0 and cbda >= 0)                         as is_potency_valid,
+                    (batch_id is not null and vendor_id is not null and product_id is not null) as is_id_valid,
+                    (state = old_state)                                                        as is_state_valid
+             from dev_geno.lab_data_partitioned_normalized
+         )
 
 
 -- 6. Which 5 labs have the lowest accuracy?
 
 
--- 7. Which 5 states have the most products and how many?
+-- 7. Which 5 states have the most products and how many? (runtime 4.579s)
 select state,
        count(distinct product_id) as num_products,
        dense_rank() over (order by count(distinct product_id) desc) as rank
 from dev_geno.lab_data_partitioned_normalized
+where product_id is not null
 group by 1 order by 2 desc;
 
 
 
--- 8. Which 5 states have the fewest products and how few?
+-- 8. Which 5 states have the fewest products and how few? (runtime 5.499s)
 select state,
        count(distinct product_id) as num_products,
        dense_rank() over (order by count(distinct product_id) asc) as rank
 from dev_geno.lab_data_partitioned_normalized
+where product_id is not null
 group by 1 order by 2 asc;
 
 
 -- 9. How many tests are performed each day of the week?
-select tested_at,
-       day_of_week(tested_at),
-       count(distinct batch_id) as batch_tested
+select batch_id, count(distinct tested_at)
 from dev_geno.lab_data_partitioned_normalized
-where tested_at >= cast('2019-02-01' as date) and
+where tested_at >= cast('2019-01-01' as date) and
       state = 'California'
-group by 1,2 order by 1;
+group by 1 order by 2 desc;
+
+select *
+from dev_geno.lab_data_partitioned_normalized
+where day_of_week(tested_at) is null;
+
+with batches_tested_per_day as (
+    select tested_at,
+           day_of_week(tested_at)   as day_of_week,
+           date_format(tested_at, '%a') as day_of_week_str,
+           count(distinct batch_id) as batch_tested
+    from dev_geno.lab_data_partitioned_normalized
+    where tested_at is not null
+--     where tested_at >= cast('2019-01-01' as date)
+--       and state = 'California'
+    group by 1, 2
+    order by 1
+)
+select day_of_week,
+       day_of_week_str,
+       avg(batch_tested) as avg_batches_tested
+from batches_tested_per_day
+group by 1,2 order by 1
+;
+
+
 
 --Make sure batches can only have one product_id
 select batch_id,
