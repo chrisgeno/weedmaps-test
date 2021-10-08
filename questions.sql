@@ -68,7 +68,7 @@ select product_id,
        max(cbda)
 from dev_geno.lab_data_partitioned_normalized
 group by 1
-order by 7 asc;
+order by 7 asc;  --check for weirdness in values, found negative values in potency
 
 select product_id, tested_at, expires_at
 from dev_geno.lab_data_partitioned_normalized
